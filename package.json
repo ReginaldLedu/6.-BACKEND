@@ -2,7 +2,7 @@
   "name": "6.-backend",
   "version": "1.0.0",
   "description": "backend-project",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js"

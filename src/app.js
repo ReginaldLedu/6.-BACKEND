@@ -1,18 +1,23 @@
 const http = require("http");
 const { URL } = require("url");
-const getUsers = require("./modules/users");
+const getBooks = require("./modules/books");
 const server = http.createServer((request, response) => {
   const url = new URL(request.url, "http://127.0.0.1");
   console.log(url.searchParams.keys());
-
-  const nameFromURL = url.searchParams.get("hello");
-
-  if (request.url === `/?hello=${nameFromURL}`) {
+  const nameFromURL = url.searchParams.get("user");
+  const lastNameFromURL = url.searchParams.get("lastname");
+  const bookId = url.searchParams.get("book");
+  /*POST запрос при авторизации (create)*/
+  if (request.url === `/?user=${nameFromURL}&lastname=${lastNameFromURL}`) {
     if (nameFromURL !== "") {
       response.statusCode = 200;
       response.statusMessage = "OK";
       response.setHeader("Content-Type", "application/json");
-      response.write(`Hello, ${url.searchParams.get("hello")}`);
+      response.write(
+        `Hello, ${url.searchParams.get("user")} ${url.searchParams.get(
+          "lastname"
+        )}`
+      );
       response.end();
       return;
     } else {
@@ -23,31 +28,33 @@ const server = http.createServer((request, response) => {
       response.end();
       return;
     }
-  } else if (request.url === "/users") {
+  } /*GET запрос на получение всех книг (read)*/ else if (
+    request.url === "/books"
+  ) {
     response.statusCode = 200;
     response.statusMessage = "OK";
     response.setHeader("Content-Type", "application/json");
-    response.write(getUsers());
+    response.write(getBooks());
     response.end();
     return;
   } else if (
-    url.searchParams.keys().length !== 0 &&
-    !url.searchParams.has("hello")
+  /*в зависимости от типа запроса книга будет возвращена (метод DELETE) (delete) или взята (метод POST) (update)*/
+    request.url === `/?book=${bookId}`
   ) {
-    response.statusCode = 500;
-    response.statusMessage = "Error";
-    response.setHeader("Content-Type", "text/plain");
-    response.write(" ");
+    response.statusCode = 200;
+    response.statusMessage = "OK";
+    response.setHeader("Content-Type", "application/json");
+    response.write("Book was taken");
     response.end();
     return;
   }
   response.statusCode = 200;
   response.statusMessage = "OK";
   response.setHeader("Content-Type", "text/plain");
-  response.write("Hello, world!");
+  response.write("Welcome to our library");
   response.end();
   return;
 });
-server.listen(3000, () => {
-  console.log("Сервер запущен по адресу http://127.0.0.1:3000");
+server.listen(4000, () => {
+  console.log("Сервер запущен по адресу http://127.0.0.1:4000");
 });
